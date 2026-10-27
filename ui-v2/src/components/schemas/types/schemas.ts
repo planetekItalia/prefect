@@ -18,6 +18,10 @@ export type WithBlockDocumentSlug = {
 	block_type_slug?: string;
 };
 
+export type WithPrefectUiWidget = {
+	"x-prefect-ui-widget"?: string;
+};
+
 export type WithDefinitions = {
 	definitions?: {
 		[name: string]: SchemaObject;
@@ -27,6 +31,7 @@ export type WithDefinitions = {
 export type PrefectSchemaObject = SchemaObject &
 	ObjectSubtype &
 	WithBlockDocumentSlug &
+	WithPrefectUiWidget &
 	WithDefinitions;
 
 export type WithPrimitiveEnum = {
@@ -41,4 +46,10 @@ export function isWithPrimitiveEnum<T extends SchemaObject>(
 		Array.isArray(property.enum) &&
 		property.enum.every((value) => isPrimitivePropertyType(typeof value))
 	);
+}
+
+export function isFeatureCollectionWidgetSchema<T extends SchemaObject>(
+	property: T,
+): property is T & WithPrefectUiWidget {
+	return property["x-prefect-ui-widget"] === "feature-collection";
 }

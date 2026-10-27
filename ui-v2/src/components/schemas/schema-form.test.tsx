@@ -16,6 +16,13 @@ import { SchemaForm } from "./schema-form";
 import type { PrefectSchemaObject } from "./types/schemas";
 import type { SchemaFormValues } from "./types/values";
 
+// MapLibre needs WebGL, which jsdom doesn't have.
+vi.mock("./feature-collection-map", () => ({
+	FeatureCollectionMap: () => (
+		<div role="application" aria-label="Feature collection map" />
+	),
+}));
+
 function TestSchemaForm({
 	schema = { type: "object", properties: {} },
 	kinds = [],
@@ -516,6 +523,35 @@ describe("property.type", () => {
 			});
 
 			expect(spy).toHaveBeenLastCalledWith({ format_rule: null });
+		});
+	});
+
+	describe("feature collection widget", () => {
+		test("renders for resolved feature collection references", () => {
+			const schema: PrefectSchemaObject = {
+				type: "object",
+				properties: {
+					aoi: {
+						$ref: "#/definitions/FeatureCollection",
+					},
+				},
+				definitions: {
+					FeatureCollection: {
+						type: "object",
+						"x-prefect-ui-widget": "feature-collection",
+						properties: {
+							type: { type: "string" },
+							features: { type: "array" },
+						},
+					},
+				},
+			};
+
+			render(<TestSchemaForm schema={schema} />);
+
+			expect(
+				screen.getByRole("application", { name: "Feature collection map" }),
+			).toBeVisible();
 		});
 	});
 });

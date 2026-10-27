@@ -2,6 +2,7 @@ import type { SchemaObject } from "openapi-typescript";
 import { SchemaFormInputAllOf } from "./schema-form-input-all-of";
 import { SchemaFormInputAnyOf } from "./schema-form-input-any-of";
 import { SchemaFormInputArray } from "./schema-form-input-array";
+import { SchemaFormInputFeatureCollection } from "./schema-form-input-feature-collection";
 import { SchemaFormInputBlockDocument } from "./schema-form-input-block-document";
 import { SchemaFormInputBoolean } from "./schema-form-input-boolean";
 import { SchemaFormInputInteger } from "./schema-form-input-integer";
@@ -16,6 +17,7 @@ import { SchemaFormInputUnknown } from "./schema-form-input-unknown";
 import { isBlockDocumentReferenceValue } from "./types/block-document-value";
 import type { SchemaFormErrors } from "./types/errors";
 import { isPrefectKindValue } from "./types/prefect-kind-value";
+import { isFeatureCollectionWidgetSchema } from "./types/schemas";
 import { asArray, asObject, asType } from "./utilities/asType";
 import {
 	isAllOfObject,
@@ -137,6 +139,16 @@ export function SchemaFormInput({
 
 		// @ts-expect-error This is an exhaustive check. If a prefect kind is not implemented this will get flaggged.
 		throw new Error(`Prefect kind not implemented: ${value.__prefect_kind}`);
+	}
+
+	if (isFeatureCollectionWidgetSchema(property)) {
+		return (
+			<SchemaFormInputFeatureCollection
+				value={value}
+				onValueChange={onValueChange}
+				id={id}
+			/>
+		);
 	}
 
 	if (isAllOfObject(property)) {

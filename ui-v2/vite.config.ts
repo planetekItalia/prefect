@@ -35,6 +35,12 @@ export default defineConfig(({ mode }) => {
 				"@tests": path.resolve(__dirname, "./tests"),
 			},
 		},
+		optimizeDeps: { // must be excluded, otherwise its worker can't be found and the drawn shapes are never rendered
+			exclude: ["maplibre-gl"],
+        },
+		worker: {
+          format: "es",
+       	},
 		build: {
 			sourcemap: false,
 			rollupOptions: {

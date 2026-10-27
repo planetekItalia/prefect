@@ -881,7 +881,7 @@ async def create_flow_run_from_deployment(
             )
 
         try:
-            dehydrated_params = deployment.parameters
+            dehydrated_params = deployment.parameters.copy()
             dehydrated_params.update(flow_run.parameters or {})
             ctx = await HydrationContext.build(
                 session=session,

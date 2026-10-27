@@ -3819,6 +3819,29 @@ class TestCreateFlowRunFromDeployment:
         )
         assert response.json()["parameters"] == {"foo": "not_bar"}
 
+    async def test_create_flow_run_from_deployment_override_params_does_not_mutate_defaults(
+        self, deployment, client
+    ):
+        response = await client.patch(
+            f"deployments/{deployment.id}", json={"parameters": {"foo": "bar"}}
+        )
+        assert response.status_code == 204
+
+        response = await client.post(
+            f"deployments/{deployment.id}/create_flow_run",
+            json=schemas.actions.DeploymentFlowRunCreate(
+                parameters={"foo": "not_bar", "baz": "qux"}
+            ).model_dump(mode="json"),
+        )
+        assert response.status_code == 201
+        assert response.json()["parameters"] == {"foo": "not_bar", "baz": "qux"}
+
+        response = await client.post(
+            f"deployments/{deployment.id}/create_flow_run", json={}
+        )
+        assert response.status_code == 201
+        assert response.json()["parameters"] == {"foo": "bar"}
+
     async def test_create_flow_run_from_deployment_override_tags(
         self, deployment, client
     ):
