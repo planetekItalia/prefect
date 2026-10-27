@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import {LazyMarkdown} from "@/components/ui/lazy-markdown.tsx";
 
 export type QuickRunParametersDialogProps = {
 	open: boolean;
@@ -116,43 +117,57 @@ export const QuickRunParametersDialog = ({
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
-				<DialogHeader>
-					<DialogTitle>Run Deployment</DialogTitle>
-				</DialogHeader>
-				<form onSubmit={(event) => void onSubmit(event)} className="space-y-4">
-					{parameterSchema && (
-						<>
-							<LazySchemaForm
-								schema={parameterSchema as unknown as PrefectSchemaObject}
-								errors={errors}
-								values={parameters}
-								onValuesChange={setParameters}
-								kinds={["json"]}
-							/>
-							<div className="flex items-center gap-2">
-								<Switch
-									id="quick-run-enforce-parameter-schema"
-									checked={enforceParameterSchema}
-									onCheckedChange={setEnforceParameterSchema}
+			<DialogContent className="max-h-[80vh] max-w-full min-w-4xl overflow-y-auto overflow-x-hidden flex flex-col">
+
+				<div className="flex">
+					<DialogHeader>
+						<DialogTitle>Run Deployment</DialogTitle>
+					</DialogHeader>
+				</div>
+
+				{deployment.description && (
+					<div className="flex py-4 mb-4 border-y">
+						<div className="max-w-none text-xs prose dark:prose-invert">
+							<LazyMarkdown>{deployment.description}</LazyMarkdown>
+						</div>
+					</div>
+				)}
+
+				<div className="flex">
+					<form onSubmit={(event) => void onSubmit(event)} className="space-y-4 max-w-full">
+						{parameterSchema && (
+							<>
+								<LazySchemaForm
+									schema={parameterSchema as unknown as PrefectSchemaObject}
+									errors={errors}
+									values={parameters}
+									onValuesChange={setParameters}
+									kinds={["json"]}
 								/>
-								<Label htmlFor="quick-run-enforce-parameter-schema">
-									Validate parameters
-								</Label>
-							</div>
-						</>
-					)}
-					<DialogFooter>
-						<DialogClose asChild>
-							<Button type="button" variant="outline">
-								Cancel
+								<div className="flex items-center gap-2">
+									<Switch
+										id="quick-run-enforce-parameter-schema"
+										checked={enforceParameterSchema}
+										onCheckedChange={setEnforceParameterSchema}
+									/>
+									<Label htmlFor="quick-run-enforce-parameter-schema">
+										Validate parameters
+									</Label>
+								</div>
+							</>
+						)}
+						<DialogFooter>
+							<DialogClose asChild>
+								<Button type="button" variant="outline">
+									Cancel
+								</Button>
+							</DialogClose>
+							<Button type="submit" loading={isPending}>
+								Run
 							</Button>
-						</DialogClose>
-						<Button type="submit" loading={isPending}>
-							Run
-						</Button>
-					</DialogFooter>
-				</form>
+						</DialogFooter>
+					</form>
+				</div>
 			</DialogContent>
 		</Dialog>
 	);
