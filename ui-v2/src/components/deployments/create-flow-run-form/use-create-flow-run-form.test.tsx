@@ -5,7 +5,7 @@ import {
 	createRouter,
 	RouterProvider,
 } from "@tanstack/react-router";
-import { act, render, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { buildApiUrl, createWrapper, server } from "@tests/utils";
 import { HttpResponse, http } from "msw";
 import { useState } from "react";
@@ -16,6 +16,9 @@ import {
 	type AdditionalOptionsOverrides,
 	useCreateFlowRunForm,
 } from "./use-create-flow-run-form";
+import {
+	CreateFlowRunForm
+} from "@/components/deployments/create-flow-run-form/create-flow-run-form.tsx";
 
 type HookResult = ReturnType<typeof useCreateFlowRunForm>;
 
@@ -230,5 +233,64 @@ describe("useCreateFlowRunForm", () => {
 		await waitFor(() => {
 			expect(requestBody.tags).toEqual(["copied-tag"]);
 		});
+	});
+
+	it("displays the deployment description", async () => {
+		const deployment = createFakeDeployment({
+			parameters: {},
+			description: "This is a deployment description",
+		});
+
+		const rootRoute = createRootRoute({
+			component: () => (
+				<CreateFlowRunForm
+					deployment={deployment}
+					overrideParameters={undefined}
+				/>
+			),
+		});
+
+		const router = createRouter({
+			routeTree: rootRoute,
+			history: createMemoryHistory({ initialEntries: ["/"] }),
+			context: { queryClient: new QueryClient() },
+		});
+
+		render(<RouterProvider router={router} />, {
+			wrapper: createWrapper(),
+		});
+
+		expect(
+			await screen.findByText("This is a deployment description"),
+		).toBeInTheDocument();
+	});
+
+	it("not displays the deployment description", async () => {
+		const deployment = createFakeDeployment({
+			parameters: {},
+		});
+
+		const rootRoute = createRootRoute({
+			component: () => (
+				<CreateFlowRunForm
+					deployment={deployment}
+					overrideParameters={undefined}
+				/>
+			),
+		});
+
+		const router = createRouter({
+			routeTree: rootRoute,
+			history: createMemoryHistory({ initialEntries: ["/"] }),
+			context: { queryClient: new QueryClient() },
+		});
+
+		render(<RouterProvider router={router} />, {
+			wrapper: createWrapper(),
+		});
+
+		expect(
+			screen.queryByText("This is a deployment description"),
+		).not.toBeInTheDocument();
 	});
 });
