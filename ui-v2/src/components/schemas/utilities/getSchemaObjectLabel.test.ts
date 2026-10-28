@@ -1,31 +1,39 @@
 import type { SchemaObject } from "openapi-typescript";
+import type { SchemaObjectWithLabel } from "./getSchemaObjectLabel.ts";
 import { describe, expect, test } from "vitest";
 import { getSchemaObjectLabel } from "./getSchemaObjectLabel";
 
 describe("getSchemaObjectLabel", () => {
+	test("returns label for a plain schema object", () => {
+		const property: SchemaObjectWithLabel = { type: "string", title: "My String", label: "My Label" };
+		const schema: SchemaObject = { type: "object" };
+
+		expect(getSchemaObjectLabel(property, schema)).toBe("My Label");
+	});
+
 	test("returns title for a plain schema object", () => {
-		const property: SchemaObject = { type: "string", title: "My String" };
+		const property: SchemaObjectWithLabel = { type: "string", title: "My String" };
 		const schema: SchemaObject = { type: "object" };
 
 		expect(getSchemaObjectLabel(property, schema)).toBe("My String");
 	});
 
 	test("returns format when no title", () => {
-		const property: SchemaObject = { type: "string", format: "date-time" };
+		const property: SchemaObjectWithLabel = { type: "string", format: "date-time" };
 		const schema: SchemaObject = { type: "object" };
 
 		expect(getSchemaObjectLabel(property, schema)).toBe("date-time");
 	});
 
 	test("returns type label when no title or format", () => {
-		const property: SchemaObject = { type: "string" };
+		const property: SchemaObjectWithLabel = { type: "string" };
 		const schema: SchemaObject = { type: "object" };
 
 		expect(getSchemaObjectLabel(property, schema)).toBe("str");
 	});
 
 	test("returns 'Field' when no title, format, or type", () => {
-		const property = {} as SchemaObject;
+		const property = {} as SchemaObjectWithLabel;
 		const schema: SchemaObject = { type: "object" };
 
 		expect(getSchemaObjectLabel(property, schema)).toBe("Field");
