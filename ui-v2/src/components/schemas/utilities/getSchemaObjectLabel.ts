@@ -12,7 +12,7 @@ const schemaObjectTypeLabels: Record<string, string | undefined> = {
 	object: "dict",
 };
 
-function getSchemaObjectTypeLabel(property: SchemaObject): string | undefined {
+function getSchemaObjectTypeLabel(property: SchemaObjectWithLabel): string | undefined {
 	if (property.type && typeof property.type === "string") {
 		return schemaObjectTypeLabels[property.type];
 	}
@@ -20,21 +20,25 @@ function getSchemaObjectTypeLabel(property: SchemaObject): string | undefined {
 	return undefined;
 }
 
+type SchemaObjectWithLabel = SchemaObject & {
+	label?: string;
+};
+
 export function getSchemaObjectLabel(
-	property: SchemaObject | ReferenceObject,
+	property: SchemaObjectWithLabel | ReferenceObject,
 	schema: SchemaObject,
 ): string {
 	if (isReferenceObject(property)) {
 		const { $ref, ...rest } = property;
 		const definition = getSchemaDefinition(schema, $ref);
-		const merged = { ...definition, ...rest } as SchemaObject;
+		const merged = { ...definition, ...rest } as SchemaObjectWithLabel;
 
 		const fallback = getSchemaObjectTypeLabel(merged) ?? "Field";
 
-		return merged.title ?? merged.format ?? fallback;
+		return merged.label ?? merged.title ?? merged.format ?? fallback;
 	}
 
 	const fallback = getSchemaObjectTypeLabel(property) ?? "Field";
 
-	return property.title ?? property.format ?? fallback;
+	return property.label ?? property.title ?? property.format ?? fallback;
 }

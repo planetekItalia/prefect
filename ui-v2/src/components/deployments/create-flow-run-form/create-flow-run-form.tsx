@@ -67,7 +67,6 @@ export const CreateFlowRunForm = ({
 				<FormField
 					control={form.control}
 					name="name"
-					name="name"
 					render={({ field }) => (
 						<FormItem>
 							<FormLabel>Run Name</FormLabel>
