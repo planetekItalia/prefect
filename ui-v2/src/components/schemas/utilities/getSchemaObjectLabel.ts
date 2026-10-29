@@ -20,7 +20,7 @@ function getSchemaObjectTypeLabel(property: SchemaObjectWithLabel): string | und
 	return undefined;
 }
 
-type SchemaObjectWithLabel = SchemaObject & {
+export type SchemaObjectWithLabel = SchemaObject & {
 	label?: string;
 };
 
