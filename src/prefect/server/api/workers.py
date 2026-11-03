@@ -556,7 +556,7 @@ async def read_work_pool(
 async def read_work_pools(
     work_pools: Optional[schemas.filters.WorkPoolFilter] = None,
     limit: int = dependencies.LimitBody(),
-    offset: int = Body(0, ge=0),
+    offset: int | None = Body(0, ge=0),
     db: PrefectDBInterface = Depends(provide_database_interface),
     prefect_client_version: Optional[str] = Depends(
         dependencies.get_prefect_client_version
@@ -977,7 +977,7 @@ async def read_work_queues(
     work_pool_name: str = Path(..., description="The work pool name"),
     work_queues: schemas.filters.WorkQueueFilter = None,
     limit: int = dependencies.LimitBody(),
-    offset: int = Body(0, ge=0),
+    offset: int | None = Body(0, ge=0),
     worker_lookups: WorkerLookups = Depends(WorkerLookups),
     db: PrefectDBInterface = Depends(provide_database_interface),
 ) -> List[schemas.responses.WorkQueueResponse]:
@@ -1242,7 +1242,7 @@ async def read_workers(
     work_pool_name: str = Path(..., description="The work pool name"),
     workers: Optional[schemas.filters.WorkerFilter] = None,
     limit: int = dependencies.LimitBody(),
-    offset: int = Body(0, ge=0),
+    offset: int | None = Body(0, ge=0),
     worker_lookups: WorkerLookups = Depends(WorkerLookups),
     db: PrefectDBInterface = Depends(provide_database_interface),
 ) -> List[schemas.responses.WorkerResponse]:

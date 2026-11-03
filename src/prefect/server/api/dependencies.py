@@ -109,7 +109,7 @@ def LimitBody() -> Any:
     """
 
     def get_limit(
-        limit: int = Body(
+        limit: int | None = Body(
             None,
             description="Defaults to PREFECT_SERVER_API_DEFAULT_LIMIT if not provided.",
         ),
